@@ -1,6 +1,7 @@
 from elasticsearch import Elasticsearch
 import datetime
 import re
+import logging
 from essential_tokens import ELASTIC_DOMAIN
 
 
@@ -46,9 +47,10 @@ searchBody = {
 
 class ElasticGetter :
     def __init__(self):
-       self.es = Elasticsearch(f"https://{ELASTIC_DOMAIN}:9200")
+       self.es = Elasticsearch(f"http://{ELASTIC_DOMAIN}:9200")
 
     def getlog(self):
+        logging.info('🫑  Start Qureying Elastic !')
         result = []
         resultcount = 0
         currYear = str(self.__getYear())
@@ -62,8 +64,10 @@ class ElasticGetter :
         if len(yesterday) == 1 :
             yesterday = "0" + yesterday
 
-        index=f".ds-filebeat-8.11.3-{currYear}.{currMonth}.{currDay}-*"
-        indexYesterday = f".ds-filebeat-8.11.3-{currYear}.{currMonth}.{yesterday}-*"
+        index=f".ds-filebeat-*-{currYear}.{currMonth}.{currDay}-*"
+        indexYesterday = f".ds-filebeat-*-{currYear}.{currMonth}.{yesterday}-*"
+        #print(index)
+        #print(indexYesterday)
         resp = self.es.search(
             # dynamic date
             index=index,
@@ -75,9 +79,9 @@ class ElasticGetter :
             body=searchBody,
         )
         hits = resp.body["hits"]["hits"]
-        print(f"⚠️  hits today count = {len(hits)}")
+        logging.info(f"🫑  hits today count = {len(hits)}")
         hitsYesterday = respYesterday.body["hits"]["hits"]
-        print(f"⚠️  hits Yesterday count = {len(hitsYesterday)}")
+        logging.info(f"🫑  hits Yesterday count = {len(hitsYesterday)}")
         for hit in hits :
             isMatch = re.match(".*fail.*", hit['_source']['error']['message'][0], re.I)
             if isMatch != None :
@@ -110,4 +114,7 @@ class ElasticGetter :
 
 
 if __name__ == "__main__" :
-    pass
+    es = ElasticGetter()
+    i, j = es.getlog()
+    print(i)
+    es.__del__()

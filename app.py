@@ -41,10 +41,10 @@ async def getinfo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reply_text = f"<b>CHAT ID</b> : <code>{chatId}</code>\n<b>USER</b> : <code>{username}</code>\n<b>USER ID</b> : <code>{userId}</code>"
     await context.bot.send_message(chat_id=update.effective_chat.id, text=reply_text, parse_mode='HTML')
 
-def send_message(messgae:str):
-    if len(messgae) == 0 :
+def send_message(message:str):
+    if len(message) == 0 :
         return 
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage?chat_id={Group_Alert}&text={messgae}&parse_mode=HTML&message_thread_id={Topic_Id}"
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage?chat_id={Group_Alert}&text={message}&parse_mode=HTML&message_thread_id={Topic_Id}"
     req = requests.post(url = url)
     req.close()
 
@@ -59,6 +59,7 @@ def timeConverter(timestamp:str):
     return (datetime_object + timeChange).strftime("%m/%d/%Y %H:%M:%S")
 
 def getErrorLog():
+    #send_message(message="<b>📂 TG Database Alert</b> Start ❕")
     while True:
         es = ElasticGetter()
         errorLogs, errorLogsCounts = es.getlog()
@@ -80,11 +81,11 @@ def getErrorLog():
             #f"<b>ERR_MSG</b> : \n<code>{errmsg}</code>" + "\n\n"
             reply_text_count += 1
             if reply_text_count == 5  :
-                send_message(messgae=reply_text)
+                send_message(message=reply_text)
                 reply_text = ""
                 reply_text_count = 0 
             elif len(errorLogs) == (index + 1) :
-                send_message(messgae=reply_text)
+                send_message(message=reply_text)
             else :
                 pass
         time.sleep(60)
