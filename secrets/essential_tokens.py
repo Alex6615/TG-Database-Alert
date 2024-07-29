@@ -1,4 +1,4 @@
-TELEGRAM_TOKEN = "6589019637:AAEVCbBCg4f-IQsmUQCHpiWTl3DZr1_NOx4"
+TELEGRAM_TOKEN = ""
 
 Notify_Group = ""
 onlineNotify = ""
